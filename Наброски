@@ -1,0 +1,16 @@
+data State = Filled | Blank -- состо€ние €чейки
+
+data Cell = (State, State) -- €чейка (текущее, правильное)
+
+data Line = [Cell] -- строка или столбец
+
+data Field = [Cell] -- игровое поле
+
+makeHorline :: Field -> Int -> Line -- вз€ть столбец
+
+makeVerline :: Field -> Int -> Line -- вз€ть строку
+
+makeNum :: Line -> [Int]
+
+checkfield :: Field -> bool -- проверить поле: все текущие == правильные дл€ победы
+
