@@ -1,16 +1,18 @@
-data State = Filled | Blank -- состояние ячейки
+data State = Filled | Blank -- СЃРѕСЃС‚РѕСЏРЅРёРµ СЏС‡РµР№РєРё
 
-data Cell = (State, State) -- ячейка (текущее, правильное)
+data Cell = (State, State) -- СЏС‡РµР№РєР° (С‚РµРєСѓС‰РµРµ, РїСЂР°РІРёР»СЊРЅРѕРµ)
 
-data Line = [Cell] -- строка или столбец
+data Line = [Cell] -- СЃС‚СЂРѕРєР° РёР»Рё СЃС‚РѕР»Р±РµС†
 
-data Field = [Cell] -- игровое поле
+data Field = [Cell] -- РёРіСЂРѕРІРѕРµ РїРѕР»Рµ
 
-makeHorline :: Field -> Int -> Line -- взять столбец
+makeHorline :: Field -> Int -> Line -- РІР·СЏС‚СЊ СЃС‚РѕР»Р±РµС†
 
-makeVerline :: Field -> Int -> Line -- взять строку
+makeVerline :: Field -> Int -> Line -- РІР·СЏС‚СЊ СЃС‚СЂРѕРєСѓ
 
-makeNum :: Line -> [Int]
+makeNum :: Line -> [Int] -- СЃРґРµР»Р°С‚СЊ РёР· СЃС‚СЂРѕРєРё / СЃС‚РѕР»Р±С†Р° РјР°СЃСЃРёРІ С†РёС„РѕСЂРѕРє
 
-checkfield :: Field -> bool -- проверить поле: все текущие == правильные для победы
+checkfield :: Field -> bool -- РїСЂРѕРІРµСЂРёС‚СЊ РїРѕР»Рµ: РІСЃРµ С‚РµРєСѓС‰РёРµ == РїСЂР°РІРёР»СЊРЅС‹Рµ РґР»СЏ РїРѕР±РµРґС‹
+
+changecell :: Field -> Int -> Int -> Field -- РІРѕР·РґРµР№СЃС‚РІРёРµ РЅР° РїРѕР»Рµ
 
