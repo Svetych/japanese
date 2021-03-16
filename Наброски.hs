@@ -1,6 +1,6 @@
 data State = Filled | Empty -- состояние ячейки
 
-data Cell = (Maybe State, Maybe State) -- ячейка (текущее, правильное)
+data Cell = (Maybe State, State) -- ячейка (текущее, правильное)
 
 data Grid = [[Cell]] -- игровое поле - матрица из ячеек
  
