@@ -1,26 +1,9 @@
-data State = Filled | Pointed | Empty deriving (Show, Eq) -- состояние ячейки (закрашена или пустая)
+  -- Взаимодействие с игровым полем --
+module Field where
 
-data Mode = Fill | Point -- ставим в поле точки или закрашиваем
-convertMode :: Mode -> State
-convertMode Fill = Filled
-convertMode Point = Pointed
+import Types
 
-data Cell = Cell {current :: State, expected :: State} deriving Show -- ячейка (текущее, правильное)
-
-type Grid = [[Cell]] -- игровое поле - матрица из ячеек
- 
--- игровое поле
-data Field = Field 
-    { gamegrid :: Grid -- игровая сетка
-    , jumble :: Int -- количество беспорядков
-    , width :: Int -- ширина игрового поля в клетках
-    , height :: Int -- высота игрового поля в клетках 
-    , horline :: [[Int]] -- цифры сбоку от сетки
-    , verline :: [[Int]] -- цифры сверху от сетки
-    , mode :: Mode
-    }
-
- --считывание игровой сетки из txt файла
+ -- считывание игровой сетки из txt файла
 readField :: [String] -> Field
 readField x = Field
     { gamegrid = makeGrid x
@@ -52,7 +35,7 @@ makeJumble x = foldr (+) 0 (map (countFilled) x)
 countFilled :: String -> Int
 countFilled x = foldr (+) 0 (makeNum x)
 
- -- сделать массив цифр сбоку/сверху от сетки
+ -- сделать массив цифр (сбоку/сверху от сетки)
 makeLine :: [String] -> [[Int]]
 makeLine x = map countLines (map (makeNum) x)
 
@@ -97,9 +80,3 @@ changeState c st | current c == st = case expected c of
  -- проверить поле: jumble = 0 => победа
 checkJumble :: Field -> Bool
 checkJumble f = (jumble f) == 0
-
---main
-main ::  IO()
-main = do
-  filecontent <- readFile "field.txt"
-  print (readField lines filecontent)
