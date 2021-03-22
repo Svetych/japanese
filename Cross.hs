@@ -26,7 +26,7 @@ readField x = Field
     { gamegrid = makeGrid x
     , jumble = makeJumble x
     , width = length (head x)
-    , height = lenght x
+    , height = length x
     , horline = makeLine x
     , verline = makeLine (transpose x)
     , mode = Fill
@@ -71,8 +71,8 @@ transpose x = (map head x) : transpose (map tail x)
 
  -- воздействие на поле (изменяем состяние gamegrid[i][j] и поле jumble)
 changeField :: Field -> Int -> Int -> Field
-changeField f i j = let pair = (changeGrid (gamegrid f) (mode f) i, j)
-                    in f{gamegrid = (take i (gamegrid f)) ++ (fst pair)), jumble = (jumble f) + (snd pair)}
+changeField f i j = let pair = (changeGrid (gamegrid f) (mode f) i j)
+                    in f{gamegrid = (take i (gamegrid f) ++ (fst pair)), jumble = (jumble f) + (snd pair)}
 
 changeGrid :: Grid -> Mode -> Int -> Int -> (Grid, Int)
 changeGrid [[]] _ _ _= ([[]], 0)
@@ -102,4 +102,4 @@ checkJumble f = (jumble f) == 0
 main ::  IO()
 main = do
   filecontent <- readFile "field.txt"
-  print (gamegrid (readField lines filecontent))
+  print(gamegrid (changeField (readField (lines filecontent)) 0 0))
