@@ -102,4 +102,4 @@ checkJumble f = (jumble f) == 0
 main ::  IO()
 main = do
   filecontent <- readFile "field.txt"
-  print (readField lines filecontent)
+  print (gamegrid (readField lines filecontent))
