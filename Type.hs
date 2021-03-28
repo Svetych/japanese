@@ -1,4 +1,4 @@
-  -- Типы данных --
+ -- Типы данных --
 module Type where
 
 data State = Filled | Pointed | Empty deriving (Show, Eq) -- состояние ячейки (закрашена или пустая)
