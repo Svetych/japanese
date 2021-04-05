@@ -87,11 +87,19 @@ drawLines f = Pictures (hl ++ vl)
 
 drawNum :: [Int] -> [Float] -> [Float] -> Picture
 drawNum l x y = Pictures (myzip (Translate) x y (map (scale compr compr . Text . show) l))
-              where compr = 0.15
+              where compr = 0.1
 
 myzip :: (a->b->c->d) -> [a] -> [b] -> [c] -> [d]
 myzip f (a:as) (b:bs) (c:cs) = (f a b c) : myzip f as bs cs
 myzip _ _ _ _ = []
+
+-- закрашиваем клетку
+drawMark :: Float -> Float -> State -> Picture
+drawMark x y m | m == Filled = Translate (x) (y) (Polygon [(1,  2), (1,  a+1), (a, a+1), (a, 2)])
+               | m == Pointed = Translate (x) (y) (Pictures [(drawMark 0 0 Empty), (Line [(1, 2), (a, a+1)]), (Line [(1, a+1), (a, 2)])])
+               | m == Empty = Translate (x) (y) (Color (white) (Polygon [(1, 2), (1,  a+1), (a, a+1), (a, 2)]))
+               where a = fromIntegral (cellSize - 2)
+
 
   -- То, что пойдет в модуль по обработке событий:
   
