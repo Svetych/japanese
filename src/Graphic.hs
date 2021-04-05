@@ -4,11 +4,6 @@ module Graphic where
 import Graphics.Gloss.Interface.Pure.Game
 import Type
 import Field
-import Check
-
--- загружаемый файл
-filePath :: FilePath
-filePath = "field.txt"
 
 -- размер клетки в пикселях
 cellSize :: Int
@@ -34,13 +29,9 @@ screenWidth f = getSize (width f + lineSize f horline) + 2*indent
 screenHeight :: Field -> Int
 screenHeight f = getSize (height f + lineSize f verline) + 2*indent
 
--- обновить поле (заглушка, тк поле изменяется только после обработки события)
-update :: Float -> Field -> Field
-update _ f = f
-
 -- отрисовать поле
 drawGame :: Field -> Picture
-drawGame f = Translate (x) (y) (Pictures [drawGrid f, drawLines f, drawNums f]) --
+drawGame f = Translate (x) (y) (Pictures [drawGrid f, drawLines f, drawNums f])
            where
            x = - fromIntegral (screenWidth f)  / 2
            y = - fromIntegral (screenHeight f) / 2
@@ -105,37 +96,14 @@ makeY h c x = replicate l (i + h) ++ (makeY (h+c) c (tail x))
           l = length (head x)
           i = fromIntegral (indent) * 1.5
 
+-- нарисовать текст по координатам
 drawNum :: [Float] -> [Float] -> [Int] -> Picture
 drawNum x y l = Pictures (zipWith3 (Translate) x y (map (scale compr compr . Text . show) l))
               where compr = 0.12
 
--- закрашиваем клетку
+-- закрасить клетку
 drawMark :: Float -> Float -> State -> Picture
 drawMark x y m | m == Filled = Translate (x) (y) (Polygon [(1,  2), (1,  a+1), (a, a+1), (a, 2)])
                | m == Pointed = Translate (x) (y) (Pictures [(drawMark 0 0 Empty), (Line [(1, 2), (a, a+1)]), (Line [(1, a+1), (a, 2)])])
                | m == Empty = Translate (x) (y) (Color (white) (Polygon [(1, 2), (1,  a+1), (a, a+1), (a, 2)]))
                where a = fromIntegral (cellSize - 2)
-
-
-  -- То, что пойдет в модуль по обработке событий:
-  
--- изменение состояния поля (пока заглушка)
-handleEvent :: Event -> Field -> Field
-handleEvent _ f = f
-
--- программа, что запускает игру и отрисовку поля
-run :: IO ()
-run = do
-  filecontent <- readFile filePath
-  let board = readField (lines filecontent)
---  print (drawNums board)
-  play (display board) bgColor fps board drawGame handleEvent update
-  where
-    display f = InWindow "Japanese Crosswords" ((screenWidth f), (screenHeight f)) (0, 0)
-    bgColor = white
-    fps = 60
-
---  case checkInput filecontent of
- --   Nothing -> putStrLn "Parse error"
---    Just cfg -> do
---      play ...
