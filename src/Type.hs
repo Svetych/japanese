@@ -3,7 +3,7 @@ module Type where
 
 data State = Filled | Pointed | Empty deriving (Show, Eq) -- состояние ячейки (закрашена или пустая)
 
-data Mode = Fill | Point -- ставим в поле точки или закрашиваем
+data Mode = Fill | Point deriving (Show, Eq) -- ставим в поле точки или закрашиваем
 convertMode :: Mode -> State
 convertMode Fill = Filled
 convertMode Point = Pointed

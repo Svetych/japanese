@@ -31,7 +31,7 @@ screenHeight f = getSize (height f + lineSize f verline) + 2*indent
 
 -- отрисовать поле
 drawGame :: Field -> Picture
-drawGame f = Translate (x) (y) (Pictures [drawGrid f, drawLines f, drawNums f])
+drawGame f = Translate (x) (y) (Pictures [drawGrid f, drawLines f, drawNums f, drawMode f])
            where
            x = - fromIntegral (screenWidth f)  / 2
            y = - fromIntegral (screenHeight f) / 2
@@ -101,9 +101,26 @@ drawNum :: [Float] -> [Float] -> [Int] -> Picture
 drawNum x y l = Pictures (zipWith3 (Translate) x y (map (scale compr compr . Text . show) l))
               where compr = 0.12
 
+-- отображение режима
+drawMode :: Field -> Picture
+drawMode f | mode f == Fill = Pictures [(Color (greyN 0.5) (Polygon [(a, b), (a,  b+c), (a+c, b+c), (a+c, b)])), (drawMark a b (convertMode (mode f)))]
+           | mode f == Point = Pictures [(Color (greyN 0.5) (Polygon [(a, b), (a,  b+c), (a+c, b+c), (a+c, b)])), (drawMark a b (convertMode (mode f)))]
+           where
+           a = fromIntegral (indent)
+           b = fromIntegral ((screenHeight f) - (indent)) - c
+           c = fromIntegral (cellSize)
+
 -- закрасить клетку
 drawMark :: Float -> Float -> State -> Picture
 drawMark x y m | m == Filled = Translate (x) (y) (Polygon [(1,  2), (1,  a+1), (a, a+1), (a, 2)])
                | m == Pointed = Translate (x) (y) (Pictures [(drawMark 0 0 Empty), (Line [(1, 2), (a, a+1)]), (Line [(1, a+1), (a, 2)])])
                | m == Empty = Translate (x) (y) (Color (white) (Polygon [(1, 2), (1,  a+1), (a, a+1), (a, 2)]))
                where a = fromIntegral (cellSize - 2)
+
+drawWin :: Field -> Picture
+drawWin f = Color (red) (Translate x y (scale compr compr (Text "WINNING!"))) --
+          where
+          x = fromIntegral (screenWidth f) / 2 - 80
+          y = fromIntegral (screenHeight f) / 2 - 20
+          compr = 0.4
+          
