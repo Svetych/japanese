@@ -40,7 +40,7 @@ update _ f = f
 
 -- отрисовать поле
 drawGame :: Field -> Picture
-drawGame f = Translate (x) (y) (Pictures [drawGrid f, drawLines f) --, drawNums f
+drawGame f = Translate (x) (y) (Pictures [drawGrid f, drawLines f]) --, drawNums f
            where
            x = - fromIntegral (screenWidth f)  / 2
            y = - fromIntegral (screenHeight f) / 2
@@ -64,6 +64,7 @@ drawLines :: Field -> Picture
 drawLines f = Pictures (hl ++ vl)
            where
            hl = map (\y -> Line [(i,y), (i+dx,y)]) [l*c + i | l <- [0..h]]
+           vl = map (\x -> Line [(x,i+w*c), (x,dy+i+w*c)]) [l*c + i + dx| l <- [0..w]]
            i = fromIntegral indent
            dx = fromIntegral (getSize(lineSize f horline))
            dy = fromIntegral (getSize(lineSize f verline))
