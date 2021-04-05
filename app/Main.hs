@@ -1,6 +1,6 @@
   -- Это main --
 
-import Graphic
+import Gameplay
 
 main :: IO ()
 main = run
