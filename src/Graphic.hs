@@ -125,12 +125,12 @@ drawWin f | jumble f == 0 = Color (red) (Translate x y (scale compr compr (Text 
               x = fromIntegral (screenWidth f) / 2 - 80
               y = fromIntegral (screenHeight f) / 2 - 20
               compr = 0.4
-                     
--- закрашивание игрового поля
+
+-- закрашивание игрового поля             
 drawCell :: Field -> Picture
 drawCell f = pictures drawCells
-  where
-    drawCells = foldMap draw1 (zip [0..] (gamegrid f))
-    draw1 (i, linecell) = map draw2 (zip [0..] linecell)
-      where
-        draw2 (j, cell) = drawMark (fromIntegral (indent + (getSize(lineSize f horline)) + (getSize i))) (fromIntegral (indent + (getSize ((height f) - j - 1)))) (current cell)
+           where
+           drawCells = foldMap draw1 (zip [0..] (gamegrid f))
+           draw1 (j, linecell) = map draw2 (zip [0..] linecell)
+             where
+             draw2 (i, cell) = drawMark (fromIntegral (indent + (getSize(lineSize f horline)) + (getSize i))) (fromIntegral (indent + (getSize ((height f) - j - 1)))) (current cell)

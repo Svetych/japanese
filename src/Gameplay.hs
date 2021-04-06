@@ -16,9 +16,8 @@ update _ f = f
   
 -- изменение состояния поля
 handleEvent :: Event -> Field -> Field 
-handleEvent (EventKey (SpecialKey KeySpace) Down _ _) f | mode f == Point = f {mode = Fill}
-                                                        | mode f == Fill = f {mode = Point}                                                        
-handleEvent (EventKey (MouseButton LeftButton) Down _ mouse) f | x >= 0 && x < width f && y >= 0 && y < height f = changeField f x y
+handleEvent (EventKey (SpecialKey KeySpace) Down _ _) f = changeMode f                                                        
+handleEvent (EventKey (MouseButton LeftButton) Down _ mouse) f | x >= 0 && x < width f && y >= 0 && y < height f = changeField f y x
                                                                | otherwise = f
                                                                  where
                                                                    x = mouseToCoordX mouse f
@@ -40,8 +39,6 @@ run = do
         putStrLn "Error"
     else do
         let board = readField (lines filecontent)
-        print $ width board 
-        print $ height board 
         play (display board) bgColor fps board drawGame handleEvent update
           where
             display f = InWindow "Japanese Crosswords" ((screenWidth f), (screenHeight f)) (0, 0)

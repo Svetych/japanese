@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: cd5883555e7184f6052ca7436d7487414814edb56e2a6edaeba5ff128c6023ab
+-- hash: af64cf05f0ab46a0e353ac5ec53142c1264ba2707a55623af5241e6e3bd78ddf
 
 name:           cross
 version:        0.1.0.0
@@ -29,6 +29,7 @@ library
   exposed-modules:
       Check
       Field
+      Gameplay
       Graphic
       Lib
       Type

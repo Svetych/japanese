@@ -63,6 +63,7 @@ changeField f i j = f{gamegrid = (take i (gamegrid f)) ++ (fst pair), jumble = (
 
 changeGrid :: Grid -> Mode -> Int -> Int -> Int -> (Grid, Int)
 changeGrid [[]] _ _ _ _= ([[]], 0)
+changeGrid [] _ _ _ _= ([[]], 0)
 changeGrid (x:xs) mode jum i j | i == 0 = ([(take j x) ++ (fst pair)] ++ xs, (snd pair))
                                | otherwise = changeGrid xs mode jum (i - 1) j
                                  where pair = (changeCell x mode jum j)
