@@ -14,6 +14,7 @@ readField x = Field
     , verline = makeLine (transpose x)
     , mode = Fill
     }
+ 
 
  -- сделать из строки массив цифр
 makeNum :: String -> [Int]
@@ -58,36 +59,36 @@ transpose x = (map head x) : transpose (map tail x)
  -- воздействие на поле (изменяем состяние gamegrid[i][j] и поле jumble)
 changeField :: Field -> Int -> Int -> Field
 changeField f i j = f{gamegrid = (take i (gamegrid f)) ++ (fst pair), jumble = (jumble f) + (snd pair)}
-                 where pair = (changeGrid (gamegrid f) (mode f) i j)
+                 where pair = (changeGrid (gamegrid f) (mode f) (jumble f) i j)
 
-changeGrid :: Grid -> Mode -> Int -> Int -> (Grid, Int)
-changeGrid [[]] _ _ _= ([[]], 0)
-changeGrid (x:xs) mode i j | i == 0 = ([(take j x) ++ (fst pair)] ++ xs, (snd pair))
-                           | otherwise = changeGrid xs mode (i - 1) j
-                           where pair = (changeCell x mode j)
+changeGrid :: Grid -> Mode -> Int -> Int -> Int -> (Grid, Int)
+changeGrid [[]] _ _ _ _= ([[]], 0)
+changeGrid (x:xs) mode jum i j | i == 0 = ([(take j x) ++ (fst pair)] ++ xs, (snd pair))
+                               | otherwise = changeGrid xs mode jum (i - 1) j
+                                 where pair = (changeCell x mode jum j)
 
-changeCell :: [Cell] -> Mode -> Int -> ([Cell], Int)
-changeCell [] _ _ = ([], 0)
-changeCell (x:xs) mode j | j == 0 = ([(fst pair)] ++ xs, (snd pair))
-                         | otherwise = changeCell xs mode (j - 1)
-                         where pair = (changeState x (convertMode mode))
+changeCell :: [Cell] -> Mode -> Int -> Int -> ([Cell], Int)
+changeCell [] _ _ _ = ([], 0)
+changeCell (x:xs) mode jum j | j == 0 = ([(fst pair)] ++ xs, (snd pair))
+                             | otherwise = changeCell xs mode jum (j - 1)
+                              where pair = (changeState x (convertMode mode) jum)
 
-changeState :: Cell -> State -> (Cell, Int)
-changeState c st | current c == st && st == Pointed = (c{current = Empty}, 0)
-                 | current c == st = case expected c of
+changeState :: Cell -> State -> Int -> (Cell, Int)
+changeState c st jum | jum == 0 = (c, 0)
+                     | current c == st && st == Pointed = (c{current = Empty}, 0)
+                     | current c == st = case expected c of
                                      Filled -> (c{current = Empty}, 1)
                                      Empty -> (c{current = Empty}, -1)
-                 | st == Filled = case expected c of
+                     | st == Filled = case expected c of
                                   Filled -> (c{current = st}, -1)
                                   Empty -> (c{current = st}, 1)
-                 | current c == Filled = case expected c of
+                     | current c == Filled = case expected c of
                                          Filled -> (c{current = st}, 1)
                                          Empty -> (c{current = st}, -1)
-                 | otherwise = (c{current = st}, 0)
+                     | otherwise = (c{current = st}, 0)
 
 
  -- воздействие на поле (изменяем режим mode)
 changeMode :: Field -> Field
 changeMode f | mode f == Point = f {mode = Fill}
              | mode f == Fill = f {mode = Point}
-
