@@ -132,5 +132,5 @@ drawCell f = pictures drawCells
     drawCells = foldMap draw1 (zip [0..] (gamegrid f))
     draw1 (i, linecell) = map draw2 (zip [0..] linecell)
       where
-        draw2 (j, cell) = drawMark (fromIntegral (indent + (getSize(lineSize f horline)) + (getSize i))) (fromIntegral (indent + (getSize ((height f) - j)))) (current cell)
+        draw2 (j, cell) = drawMark (fromIntegral (indent + (getSize(lineSize f horline)) + (getSize i))) (fromIntegral (indent + (getSize ((height f) - j - 1)))) (current cell)
  
