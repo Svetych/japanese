@@ -4,7 +4,7 @@ import Graphics.Gloss.Interface.Pure.Game
 import Type
 import Field
 import Check
-import Graphic
+import Graphic 
 
 -- загружаемый файл
 filePath :: FilePath
@@ -12,13 +12,13 @@ filePath = "field.txt"
 
 -- обновить поле (заглушка, тк поле изменяется только после обработки события)
 update :: Float -> Field -> Field
-update _ f = f
- 
+update _ f = f 
+  
 -- изменение состояния поля
 handleEvent :: Event -> Field -> Field 
 handleEvent (EventKey (SpecialKey KeySpace) Down _ _) f | mode f == Point = f {mode = Fill}
                                                         | mode f == Fill = f {mode = Point}                                                        
-handleEvent (EventKey (MouseButton LeftButton) Down _ mouse) f | x > 0 && x < width f && y > 0 && y < height f = changeField f x y 
+handleEvent (EventKey (MouseButton LeftButton) Down _ mouse) f | x >= 0 && x < width f && y >= 0 && y < height f = changeField f x y 
                                                                | otherwise = f
                                                                  where
                                                                    x = mouseToCoordX mouse f
