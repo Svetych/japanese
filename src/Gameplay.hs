@@ -17,8 +17,12 @@ update _ f = f
 -- изменение состояния поля
 handleEvent :: Event -> Field -> Field 
 handleEvent (EventKey (SpecialKey KeySpace) Down _ _) f | mode f == Point = f {mode = Fill}
-                                                        | mode f == Fill = f {mode = Point}
-handleEvent (EventKey (MouseButton LeftButton) Down _ mouse) f = changeField f (mouseToCoordX mouse f) (mouseToCoordY mouse f)                                                  
+                                                        | mode f == Fill = f {mode = Point}                                                        
+handleEvent (EventKey (MouseButton LeftButton) Down _ mouse) f | x > 0 && x < width f && y > 0 && y < height f = changeField f x y 
+                                                               | otherwise = f
+                                                                 where
+                                                                   x = mouseToCoordX mouse f
+                                                                   y = mouseToCoordY mouse f
 handleEvent _ f = f  
 
 -- Получить координаты клетки под мышкой
@@ -26,18 +30,23 @@ mouseToCoordX :: Point -> Field -> Int
 mouseToCoordX (x, y) f = floor (x + fromIntegral (screenWidth f) / 2 - fromIntegral (indent + getSize (lineSize f horline))) `div` cellSize
 
 mouseToCoordY :: Point -> Field -> Int
-mouseToCoordY (x, y) f = (height f) - floor (y + fromIntegral (screenHeight f) / 2 - (fromIntegral indent)) `div` cellSize 
+mouseToCoordY (x, y) f = (height f) - floor (y + fromIntegral (screenHeight f) / 2 - (fromIntegral indent)) `div` cellSize - 1
 
 -- программа, что запускает игру и отрисовку поля
 run :: IO ()
 run = do
   filecontent <- readFile filePath
-  let board = readField (lines filecontent)
-  play (display board) bgColor fps board drawGame handleEvent update
-  where
-    display f = InWindow "Japanese Crosswords" ((screenWidth f), (screenHeight f)) (0, 0)
-    bgColor = white
-    fps = 60
+  if ((checkInput (lines filecontent)) == False) then do
+        putStrLn "Error"
+    else do
+        let board = readField (lines filecontent)
+        print $ height board
+        print $ width board
+        play (display board) bgColor fps board drawGame handleEvent update
+          where
+            display f = InWindow "Japanese Crosswords" ((screenWidth f), (screenHeight f)) (0, 0)
+            bgColor = white
+            fps = 60
 
 --  case checkInput filecontent of
  --   Nothing -> putStrLn "Parse error"
