@@ -13,17 +13,26 @@ filePath = "field.txt"
 -- обновить поле (заглушка, тк поле изменяется только после обработки события)
 update :: Float -> Field -> Field
 update _ f = f
-  
--- изменение состояния поля (пока заглушка)
-handleEvent :: Event -> Field -> Field
-handleEvent _ f = f
+ 
+-- изменение состояния поля
+handleEvent :: Event -> Field -> Field 
+handleEvent (EventKey (SpecialKey KeySpace) Down _ _) f | mode f == Point = f {mode = Fill}
+                                                        | mode f == Fill = f {mode = Point}
+handleEvent (EventKey (MouseButton LeftButton) Down _ mouse) f = changeField f (mouseToCoordX mouse f) (mouseToCoordY mouse f)                                                  
+handleEvent _ f = f  
+
+-- Получить координаты клетки под мышкой
+mouseToCoordX :: Point -> Field -> Int
+mouseToCoordX (x, y) f = floor (x + fromIntegral (screenWidth f) / 2 - fromIntegral (indent + getSize (lineSize f horline))) `div` cellSize
+
+mouseToCoordY :: Point -> Field -> Int
+mouseToCoordY (x, y) f = (height f) - floor (y + fromIntegral (screenHeight f) / 2 - (fromIntegral indent)) `div` cellSize 
 
 -- программа, что запускает игру и отрисовку поля
 run :: IO ()
 run = do
   filecontent <- readFile filePath
   let board = readField (lines filecontent)
---  print (drawNums board)
   play (display board) bgColor fps board drawGame handleEvent update
   where
     display f = InWindow "Japanese Crosswords" ((screenWidth f), (screenHeight f)) (0, 0)
