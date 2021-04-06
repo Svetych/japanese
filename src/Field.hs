@@ -1,4 +1,4 @@
- -- Взаимодействие с игровым полем --
+-- Взаимодействие с игровым полем --
 module Field where
 
 import Type
@@ -62,13 +62,15 @@ changeField f i j = f{gamegrid = (take i (gamegrid f)) ++ (fst pair), jumble = (
 
 changeGrid :: Grid -> Mode -> Int -> Int -> (Grid, Int)
 changeGrid [[]] _ _ _= ([[]], 0)
-changeGrid (x:xs) mode i j | i == 0 = ([(take j x) ++ (fst pair)] ++ xs, (snd pair))
+changeGrid (x:xs) mode i j | i < 0 = ([(take j x) ++ (fst pair)] ++ xs, (snd pair))
+                           | i == 0 = ([(take j x) ++ (fst pair)] ++ xs, (snd pair))
                            | otherwise = changeGrid xs mode (i - 1) j
                            where pair = (changeCell x mode j)
 
 changeCell :: [Cell] -> Mode -> Int -> ([Cell], Int)
 changeCell [] _ _ = ([], 0)
-changeCell (x:xs) mode j | j == 0 = ([(fst pair)] ++ xs, (snd pair))
+changeCell (x:xs) mode j | j < 0 = ([(fst pair)] ++ xs, (snd pair))
+                         | j == 0 = ([(fst pair)] ++ xs, (snd pair))
                          | otherwise = changeCell xs mode (j - 1)
                          where pair = (changeState x (convertMode mode))
 
@@ -84,3 +86,4 @@ changeState c st | current c == st = case expected c of
  -- воздействие на поле (изменяем режим mode)
 changeMode :: Field -> Mode -> Field
 changeMode f m = f{mode = m}
+
