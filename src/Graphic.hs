@@ -1,4 +1,4 @@
- -- Отрисовка игрового поля --
+-- Отрисовка игрового поля --
 module Graphic where
 
 import Graphics.Gloss.Interface.Pure.Game
