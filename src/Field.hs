@@ -75,15 +75,21 @@ changeCell (x:xs) mode j | j < 0 = ([(fst pair)] ++ xs, (snd pair))
                          where pair = (changeState x (convertMode mode))
 
 changeState :: Cell -> State -> (Cell, Int)
-changeState c st | current c == st = case expected c of
+changeState c st | current c == st && st == Pointed = (c{current = Empty}, 0)
+                 | current c == st = case expected c of
                                      Filled -> (c{current = Empty}, 1)
                                      Empty -> (c{current = Empty}, -1)
-                 | otherwise = case expected c of
-                               Filled -> (c{current = st}, -1)
-                               Empty -> (c{current = st}, 1)
+                 | st == Filled = case expected c of
+                                  Filled -> (c{current = st}, -1)
+                                  Empty -> (c{current = st}, 1)
+                 | current c == Filled = case expected c of
+                                         Filled -> (c{current = st}, 1)
+                                         Empty -> (c{current = st}, -1)
+                 | otherwise = (c{current = st}, 0)
 
 
  -- воздействие на поле (изменяем режим mode)
-changeMode :: Field -> Mode -> Field
-changeMode f m = f{mode = m}
+changeMode :: Field -> Field
+changeMode f | mode f == Point = f {mode = Fill}
+             | mode f == Fill = f {mode = Point}
 
