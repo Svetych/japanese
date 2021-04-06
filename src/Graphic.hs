@@ -4,10 +4,11 @@ module Graphic where
 import Graphics.Gloss.Interface.Pure.Game
 import Type
 import Field
+import Check 
 
 -- размер клетки в пикселях
 cellSize :: Int
-cellSize = 30
+cellSize = 50
 
 -- отступ в пискселях
 indent :: Int
@@ -31,7 +32,7 @@ screenHeight f = getSize (height f + lineSize f verline) + 2*indent
 
 -- отрисовать поле
 drawGame :: Field -> Picture
-drawGame f = Translate (x) (y) (Pictures [drawGrid f, drawLines f, drawNums f, drawMode f])
+drawGame f = Translate (x) (y) (Pictures [drawGrid f, drawLines f, drawNums f, drawMode f,  drawCell f]) --
            where
            x = - fromIntegral (screenWidth f)  / 2
            y = - fromIntegral (screenHeight f) / 2
@@ -100,7 +101,7 @@ makeY h c x = replicate l (i + h) ++ (makeY (h+c) c (tail x))
 drawNum :: [Float] -> [Float] -> [Int] -> Picture
 drawNum x y l = Pictures (zipWith3 (Translate) x y (map (scale compr compr . Text . show) l))
               where compr = 0.12
-
+             
 -- отображение режима
 drawMode :: Field -> Picture
 drawMode f | mode f == Fill = Pictures [(Color (greyN 0.5) (Polygon [(a, b), (a,  b+c), (a+c, b+c), (a+c, b)])), (drawMark a b (convertMode (mode f)))]
@@ -123,8 +124,7 @@ drawWin f = Color (red) (Translate x y (scale compr compr (Text "WINNING!"))) --
           x = fromIntegral (screenWidth f) / 2 - 80
           y = fromIntegral (screenHeight f) / 2 - 20
           compr = 0.4
-          
-                    
+                     
 -- закрашивание игрового поля
 drawCell :: Field -> Picture
 drawCell f = pictures drawCells
