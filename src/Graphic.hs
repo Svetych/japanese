@@ -124,3 +124,13 @@ drawWin f = Color (red) (Translate x y (scale compr compr (Text "WINNING!"))) --
           y = fromIntegral (screenHeight f) / 2 - 20
           compr = 0.4
           
+                    
+-- закрашивание игрового поля
+drawCell :: Field -> Picture
+drawCell f = pictures drawCells
+  where
+    drawCells = foldMap draw1 (zip [0..] (gamegrid f))
+    draw1 (i, linecell) = map draw2 (zip [0..] linecell)
+      where
+        draw2 (j, cell) = drawMark (fromIntegral (indent + (getSize(lineSize f horline)) + (getSize i))) (fromIntegral (indent + (getSize ((height f) - j)))) (current cell)
+ 
