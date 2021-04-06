@@ -8,7 +8,7 @@ import Check
 
 -- размер клетки в пикселях
 cellSize :: Int
-cellSize = 50
+cellSize = 30
 
 -- отступ в пискселях
 indent :: Int
