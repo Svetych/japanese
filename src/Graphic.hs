@@ -32,7 +32,7 @@ screenHeight f = getSize (height f + lineSize f verline) + 2*indent
 
 -- отрисовать поле
 drawGame :: Field -> Picture
-drawGame f = Translate (x) (y) (Pictures [drawGrid f, drawLines f, drawNums f, drawMode f,  drawCell f]) --
+drawGame f = Translate (x) (y) (Pictures [drawGrid f, drawLines f, drawNums f, drawMode f,  drawCell f, drawWin f])
            where
            x = - fromIntegral (screenWidth f)  / 2
            y = - fromIntegral (screenHeight f) / 2
@@ -119,11 +119,12 @@ drawMark x y m | m == Filled = Translate (x) (y) (Polygon [(1,  2), (1,  a+1), (
                where a = fromIntegral (cellSize - 2)
 
 drawWin :: Field -> Picture
-drawWin f = Color (red) (Translate x y (scale compr compr (Text "WINNING!"))) --
-          where
-          x = fromIntegral (screenWidth f) / 2 - 80
-          y = fromIntegral (screenHeight f) / 2 - 20
-          compr = 0.4
+drawWin f | jumble f == 0 = Color (red) (Translate x y (scale compr compr (Text "WINNING!")))
+          | otherwise = Blank
+            where
+              x = fromIntegral (screenWidth f) / 2 - 80
+              y = fromIntegral (screenHeight f) / 2 - 20
+              compr = 0.4
                      
 -- закрашивание игрового поля
 drawCell :: Field -> Picture
@@ -133,4 +134,3 @@ drawCell f = pictures drawCells
     draw1 (i, linecell) = map draw2 (zip [0..] linecell)
       where
         draw2 (j, cell) = drawMark (fromIntegral (indent + (getSize(lineSize f horline)) + (getSize i))) (fromIntegral (indent + (getSize ((height f) - j - 1)))) (current cell)
- 
