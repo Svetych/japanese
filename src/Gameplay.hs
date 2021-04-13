@@ -43,7 +43,7 @@ run = do
   if ((checkInput (lines filecontent)) == False || (checkSave (lines saves)) == False) then do
         putStrLn "Error"
     else do
-        let board = readField (lines filecontent) (lines saves) 0 1
+        let board = readField (lines filecontent) (lines saves) 0 1 0
         play (display board) bgColor fps board drawGame handleEvent update
           where
             display f = InWindow "Japanese Crosswords" ((screenWidth f), (screenHeight f)) (0, 0)
