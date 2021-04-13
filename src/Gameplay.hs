@@ -8,8 +8,8 @@ import Graphic
 import Menu
 
 -- файл с головоломкой
-filePath :: FilePath
-filePath = "field.txt"
+filePath :: Menu -> FilePath
+filePath m = (selected m)
 
 -- файл с сохранением
 fileSave :: FilePath
@@ -61,11 +61,11 @@ playGame f = play (display f) bgColor fps f drawGame handleBEvent fieldUpdate
 -- программа, что запускает игру и отрисовку поля
 run :: IO ()
 run = do
-  filecontent <- readFile filePath
-  saves <- readFile fileSave
-  if ((checkInput (lines filecontent)) == False || (checkSave (lines saves)) == False) then do
+  menu <- readMenu
+  playMenu menu
+  filecontent <- readFile (filePath menu)
+  if ((checkInput (lines filecontent)) == False ) then do
         putStrLn "Error"
     else do
         let board = readField (lines filecontent) (lines saves) 0 1 0
-        playMenu menu
         playGame board
