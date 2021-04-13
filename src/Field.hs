@@ -4,8 +4,8 @@ module Field where
 import Type
 
  -- считывание игровой сетки из txt файла
-readField :: [String] -> [String] -> Int -> Int -> Field
-readField x y j n = Field
+readField :: [String] -> [String] -> Int -> Int -> Int -> Field
+readField x y j n t = Field
     { gamegrid = makeGrid x y
     , jumble = makeJumble x j
     , width = length (head x)
@@ -14,7 +14,7 @@ readField x y j n = Field
     , verline = makeLine (transpose x)
     , mode = Fill
     , numberfield = n
-    , timer = 0.0
+    , timer = t
     }
 
  -- сделать из строки массив цифр
@@ -101,3 +101,8 @@ changeState c st jum | jum == 0 = (c, 0)
 changeMode :: Field -> Field
 changeMode f | mode f == Point = f {mode = Fill}
              | mode f == Fill = f {mode = Point}
+
+-- увеличить таймер на 1 секунду
+nextSec :: Field -> Field
+nextSec f = f {timer = (curTime) + 1}
+          where curTime = (timer f)
