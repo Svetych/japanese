@@ -4,7 +4,7 @@ module Menu where
 -- менюшка
 data Menu = Menu
     { games :: [String] -- список названий файлов
-    , selected Maybe String -- выбранная головоломка
+    , selected :: Maybe String -- выбранная головоломка
     , width :: Int -- ширина
     , height :: Int -- высота
     }
