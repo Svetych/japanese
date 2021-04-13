@@ -4,16 +4,15 @@ module Field where
 import Type
 
  -- считывание игровой сетки из txt файла
-readField :: [String] -> [String] -> Int -> Int -> Int -> Field
-readField x y j n t = Field
-    { gamegrid = makeGrid x y
-    , jumble = makeJumble x j
+readField :: [String] -> Int -> Field
+readField x t = Field
+    { gamegrid = makeGrid x
+    , jumble = makeJumble x
     , width = length (head x)
     , height = length x
     , horline = makeLine x
     , verline = makeLine (transpose x)
     , mode = Fill
-    , numberfield = n
     , timer = t
     }
 
@@ -22,26 +21,19 @@ makeNum :: String -> [Int]
 makeNum = map (read . pure :: Char -> Int)
 
  -- сделать из файла поле
-makeGrid :: [String] -> [String] -> Grid
-makeGrid x y = map (fillLine) (zip (map (makeNum) x) (map (makeNum) y))
+makeGrid :: [String] -> Grid
+makeGrid x = map (fillLine) (map (makeNum) x)
            where fillLine = map (makeCell)
 
-makeCell :: (Int, Int) -> Cell
-makeCell (1, x) case expected of
-                0 -> Cell {current = Empty, expected = Filled}
-                1 -> Cell {current = Filled, expected = Filled}
-                2 -> Cell {current = Pointed, expected = Filled}
-makeCell (0, x) case expected of
-                0 -> Cell {current = Empty, expected = Empty}
-                1 -> Cell {current = Filled, expected = Empty}
-                2 -> Cell {current = Pointed, expected = Empty}
+makeCell :: Int -> Cell
+makeCell 1 =Cell {current = Empty, expected = Filled}
+makeCell 0 = Cell {current = Empty, expected = Empty}
 
  -- посчитать в файле беспорядки
-makeJumble :: [String] -> Int -> Int
-makeJumble x 0 = foldr (+) 0 (map (countFilled) x)
+makeJumble :: [String] -> Int
+makeJumble x = foldr (+) 0 (map (countFilled) x)
              where countFilled :: String -> Int
                    countFilled x = foldr (+) 0 (makeNum x)
-makeJumble _ j = j
 
  -- проверить поле: jumble = 0 => победа
 checkJumble :: Field -> Bool
