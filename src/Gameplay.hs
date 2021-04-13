@@ -6,9 +6,13 @@ import Field
 import Check
 import Graphic 
 
--- загружаемый файл
+-- файл с головоломкой
 filePath :: FilePath
 filePath = "field.txt"
+
+-- файл с сохранением
+fileSave :: FilePath
+fileSave = "save.txt"
 
 -- обновить поле (заглушка, тк поле изменяется только после обработки события)
 update :: Float -> Field -> Field
@@ -35,10 +39,11 @@ mouseToCoordY (x, y) f = (height f) - (floor (y + fromIntegral (screenHeight f) 
 run :: IO ()
 run = do
   filecontent <- readFile filePath
-  if ((checkInput (lines filecontent)) == False) then do
+  saves <- readFile fileSave
+  if ((checkInput (lines filecontent)) == False || (checkSave (lines saves)) == False) then do
         putStrLn "Error"
     else do
-        let board = readField (lines filecontent)
+        let board = readField (lines filecontent) (lines saves) 0 1
         play (display board) bgColor fps board drawGame handleEvent update
           where
             display f = InWindow "Japanese Crosswords" ((screenWidth f), (screenHeight f)) (0, 0)
@@ -46,6 +51,6 @@ run = do
             fps = 60
 
 --  case checkInput filecontent of
- --   Nothing -> putStrLn "Parse error"
+--   Nothing -> putStrLn "Parse error"
 --    Just cfg -> do
 --      play ...
