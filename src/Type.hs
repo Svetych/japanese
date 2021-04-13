@@ -21,6 +21,5 @@ data Field = Field
     , horline :: [[Int]] -- цифры сбоку от сетки
     , verline :: [[Int]] -- цифры сверху от сетки
     , mode :: Mode -- режим
-    , numberfield :: Int -- номер игрового поля
     , timer :: Double -- время игры
     }
