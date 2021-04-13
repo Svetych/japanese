@@ -4,7 +4,8 @@ module Graphic where
 import Graphics.Gloss.Interface.Pure.Game
 import Type
 import Field
-import Check 
+import Check
+import Time
 
 -- размер клетки в пикселях
 cellSize :: Int
