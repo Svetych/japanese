@@ -14,9 +14,9 @@ filePath = "field.txt"
 fileSave :: FilePath
 fileSave = "save.txt"
 
--- обновить поле (заглушка, тк поле изменяется только после обработки события)
+-- обновить поле (поменять таймер)
 update :: Float -> Field -> Field
-update _ f = f 
+update _ f = (nextSec f)
   
 -- изменение состояния поля
 handleEvent :: Event -> Field -> Field 
@@ -48,7 +48,7 @@ run = do
           where
             display f = InWindow "Japanese Crosswords" ((screenWidth f), (screenHeight f)) (0, 0)
             bgColor = white
-            fps = 60
+            fps = 1
 
 --  case checkInput filecontent of
 --   Nothing -> putStrLn "Parse error"
