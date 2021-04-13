@@ -13,7 +13,14 @@ checkNum x
     | x == '1' = True
     | x == '0' = True
     | otherwise = False
-    
+
+checkSave :: Char -> Bool
+checkSave x
+    | x == '2' = True
+    | x == '1' = True
+    | x == '0' = True
+    | otherwise = False
+
 checkStr :: String -> Bool
 checkStr x = foldr1 (&&) (map (checkNum) x) 
 
