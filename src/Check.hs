@@ -13,9 +13,15 @@ checkNum x
     | x == '1' = True
     | x == '0' = True
     | otherwise = False
-
+    
 checkStr :: String -> Bool
 checkStr x = foldr1 (&&) (map (checkNum) x) 
 
 checkInput :: [String] -> Bool
 checkInput x = foldr1 (&&) (map (checkStr) x)
+
+checkMenu :: Maybe FilePath -> FilePath
+checkMenu f = case f of
+              Nothing -> "field.txt"
+              Just fp -> fp
+

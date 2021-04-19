@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: af64cf05f0ab46a0e353ac5ec53142c1264ba2707a55623af5241e6e3bd78ddf
+-- hash: b98b6afdb7f534cdb98d9e9a4fe8222491f3d897f5912b4c096f97ed99416750
 
 name:           cross
 version:        0.1.0.0
@@ -31,7 +31,7 @@ library
       Field
       Gameplay
       Graphic
-      Lib
+      Menu
       Type
   other-modules:
       Paths_cross
@@ -39,6 +39,7 @@ library
       src
   build-depends:
       base >=4.7 && <5
+    , filepath
     , gloss
   default-language: Haskell2010
 
@@ -52,6 +53,7 @@ executable cross-exe
   build-depends:
       base >=4.7 && <5
     , cross
+    , filepath
     , gloss
   default-language: Haskell2010
 
@@ -66,5 +68,6 @@ test-suite cross-test
   build-depends:
       base >=4.7 && <5
     , cross
+    , filepath
     , gloss
   default-language: Haskell2010

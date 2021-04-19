@@ -3,9 +3,21 @@ module Field where
 
 import Type
 
+makeField :: Field
+makeField = Field
+    { gamegrid = [[]]
+    , jumble = 1
+    , width = 0
+    , height = 0
+    , horline = [[]]
+    , verline = [[]]
+    , mode = Fill
+    , timer = 0
+    }
+
  -- считывание игровой сетки из txt файла
-readField :: [String] -> Int -> Field
-readField x t = Field
+readField :: [String] -> Field
+readField x = Field
     { gamegrid = makeGrid x
     , jumble = makeJumble x
     , width = length (head x)
@@ -13,7 +25,7 @@ readField x t = Field
     , horline = makeLine x
     , verline = makeLine (transpose x)
     , mode = Fill
-    , timer = t
+    , timer = 0
     }
 
  -- сделать из строки массив цифр
@@ -22,11 +34,11 @@ makeNum = map (read . pure :: Char -> Int)
 
  -- сделать из файла поле
 makeGrid :: [String] -> Grid
-makeGrid x = map (fillLine) (map (makeNum) x)
+makeGrid x = map (fillLine)(map (makeNum) x)
            where fillLine = map (makeCell)
 
 makeCell :: Int -> Cell
-makeCell 1 =Cell {current = Empty, expected = Filled}
+makeCell 1 = Cell {current = Empty, expected = Filled}
 makeCell 0 = Cell {current = Empty, expected = Empty}
 
  -- посчитать в файле беспорядки
@@ -94,7 +106,14 @@ changeMode :: Field -> Field
 changeMode f | mode f == Point = f {mode = Fill}
              | mode f == Fill = f {mode = Point}
 
+
 -- увеличить таймер на 1 секунду
 nextSec :: Field -> Field
-nextSec f = f {timer = (curTime) + 1}
+nextSec f | jumble f == 0 = f
+          | otherwise = f {timer = (curTime) + 1}
+            where curTime = (timer f)
+
+-- получить минуты и секунды
+getTime :: Field -> (Int, Int)
+getTime f = (curTime `div` 60, curTime `mod` 60)
           where curTime = (timer f)

@@ -20,6 +20,6 @@ data Field = Field
     , height :: Int -- высота игрового поля в клетках 
     , horline :: [[Int]] -- цифры сбоку от сетки
     , verline :: [[Int]] -- цифры сверху от сетки
-    , mode :: Mode -- режим
-    , timer :: Double -- время игры
+    , mode :: Mode
+    , timer :: Int
     }

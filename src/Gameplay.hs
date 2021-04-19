@@ -1,19 +1,16 @@
  -- Игровой процесс --
 module Gameplay where
 import Graphics.Gloss.Interface.Pure.Game
+import System.IO.Unsafe
 import Type
 import Field
 import Check
-import Graphic
+import Graphic 
 import Menu
 
 -- файл с головоломкой
 filePath :: Menu -> FilePath
-filePath m = (selected m)
-
--- файл с сохранением
-fileSave :: FilePath
-fileSave = "save.txt"
+filePath m = (checkMenu (selected m))
 
 -- обновить поле (поменять таймер)
 fieldUpdate :: Float -> Field -> Field
@@ -24,18 +21,14 @@ menuUpdate :: Float -> Menu -> Menu
 menuUpdate _ m = m
 
 -- изменение состояния поля
-handleBEvent :: Event -> Field -> Field 
-handleBEvent (EventKey (SpecialKey KeySpace) Down _ _) f = changeMode f                                                        
-handleBEvent (EventKey (MouseButton LeftButton) Down _ mouse) f | x >= 0 && x < width f && y >= 0 && y < height f = changeField f y x
-                                                               | otherwise = f
-                                                                 where
+handleGame :: Event -> Field -> Field 
+handleGame (EventKey (SpecialKey KeySpace) Down _ _) f = changeMode f                                                        
+handleGame (EventKey (MouseButton LeftButton) Down _ mouse) f | x >= 0 && x < width f && y >= 0 && y < height f = changeField f y x
+                                                              | otherwise = f
+                                                                where
                                                                    x = mouseToCoordX mouse f
                                                                    y = mouseToCoordY mouse f
-handleBEvent _ f = f  
-
--- изменение состояния меню
-handleMEvent :: Event -> Menu -> Menu
-handleMEvent _ m = m
+handleGame _ f = f  
 
 -- Получить координаты клетки под мышкой
 mouseToCoordX :: Point -> Field -> Int
@@ -44,28 +37,66 @@ mouseToCoordX (x, y) f = (floor (x + fromIntegral (screenWidth f) / 2) - (indent
 mouseToCoordY :: Point -> Field -> Int
 mouseToCoordY (x, y) f = (height f) - (floor (y + fromIntegral (screenHeight f) / 2) - indent) `div` cellSize -1
 
-playMenu :: Menu -> IO()
-playMenu m = play (display m) bgColor fps m drawMenu handleMEvent menuUpdate
-           where
-            display m = FullScreen
-            bgColor = white
-            fps = 1
+-- изменение состояния меню
+handleMenu :: Event -> Menu -> Menu 
+handleMenu (EventKey (MouseButton LeftButton) Down _ mouse) m | y >= 0 && y < h = changeMenu m y
+                                                              | otherwise = m
+                                                                where
+                                                                   h = length (games m)
+                                                                   y = mouseToNum mouse m
+handleMenu _ m = m 
 
-playGame :: Field -> IO()
-playGame f = play (display f) bgColor fps f drawGame handleBEvent fieldUpdate
+mouseToNum :: Point -> Menu -> Int
+mouseToNum (_, y) m = ((floor (y + fromIntegral (heightM m) / 2) - indent)) `div` cellSize
+
+-------------
+-- приложение
+data App = App {menu :: Menu, field :: Field, err :: Bool}
+
+makeApp :: Menu -> App
+makeApp m = App {menu = m, field = makeField, err = False}
+
+-- отрисовка
+drawApp :: App -> Picture
+drawApp a | err a = drawErr
+          | kostyl (menu a) == 1 = delMenu (menu a)
+          | otherwise = case (selected (menu a)) of
+                        Nothing -> drawMenu (menu a)
+                        Just fp -> drawGame (field a)
+
+-- обработка
+handleEvent :: Event -> App -> App
+handleEvent eve a | kostyl (menu a) == 1 = makeKostyl a
+                  | otherwise = case (selected (menu a)) of
+                                Nothing -> a {menu = handleMenu eve (menu a)}
+                                Just fp -> a {field = handleGame eve (field a)}
+
+-- обновление
+appUpdate :: Float -> App -> App
+appUpdate f a = case (selected (menu a)) of
+                Nothing -> a{menu = menuUpdate f(menu a)}
+                Just fp -> a{field = fieldUpdate f (field a)}
+
+-- смена режимов работы приложения
+makeKostyl :: App -> App
+makeKostyl a = a{field = readField filecontent, menu = m, err = e}
+             where
+             m = reduK (menu a)
+             filecontent = lines (unsafePerformIO (readFile (filePath (menu a))))
+             e = case (checkInput filecontent) of
+                   False -> True
+                   True -> False
+
+-- надпись об ошибке
+drawErr :: Picture
+drawErr = Pictures [table, title] 
           where
-            display f = InWindow "Japanese Crosswords" ((screenWidth f), (screenHeight f)) (0, 0)
-            bgColor = white
-            fps = 1
+          table = Color (greyN 0.9) (Polygon [(-100,  -25), (-100,  25), (100, 25), (100, -25)])
+          title = Color (red) (scale compr compr (Text "ERROR!"))
+          compr = 0.4
 
 -- программа, что запускает игру и отрисовку поля
 run :: IO ()
 run = do
-  menu <- readMenu
-  playMenu menu
-  filecontent <- readFile (filePath menu)
-  if ((checkInput (lines filecontent)) == False ) then do
-        putStrLn "Error"
-    else do
-        let board = readField (lines filecontent) (lines saves) 0 1 0
-        playGame board
+  let app = makeApp (readMenu)
+  play FullScreen white 1 app drawApp handleEvent appUpdate

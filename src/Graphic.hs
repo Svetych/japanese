@@ -4,8 +4,6 @@ module Graphic where
 import Graphics.Gloss.Interface.Pure.Game
 import Type
 import Field
-import Check
-import Time
 
 -- размер клетки в пикселях
 cellSize :: Int
@@ -15,11 +13,15 @@ cellSize = 30
 indent :: Int
 indent = 10
 
+-- отступ под таймер в пикселях
+timerIndent :: Int
+timerIndent = 30
+
 -- размер поля с числами
 lineSize :: Field -> (Field -> [[Int]]) -> Int
 lineSize f x = maximum ( map length (x f))
 
--- пеерсчитать размер в клетках
+-- пересчитать размер в клетках
 getSize :: Int -> Int
 getSize x = x * cellSize
 
@@ -29,11 +31,11 @@ screenWidth f = getSize (width f + lineSize f horline) + 2*indent
 
 -- высота экрана в пикселях
 screenHeight :: Field -> Int
-screenHeight f = getSize (height f + lineSize f verline) + 2*indent
+screenHeight f = getSize (height f + lineSize f verline) + 2*indent + timerIndent
 
 -- отрисовать поле
 drawGame :: Field -> Picture
-drawGame f = Translate (x) (y) (Pictures [drawGrid f, drawLines f, drawNums f, drawMode f,  drawCell f, drawWin f])
+drawGame f = Translate (x) (y) (Pictures [drawGrid f, drawLines f, drawNums f, drawMode f, drawCell f, drawTimer f, drawWin f])
            where
            x = - fromIntegral (screenWidth f)  / 2
            y = - fromIntegral (screenHeight f) / 2
@@ -98,7 +100,7 @@ makeY h c x = replicate l (i + h) ++ (makeY (h+c) c (tail x))
           l = length (head x)
           i = fromIntegral (indent) * 1.5
 
--- нарисовать текст по координатам
+-- нарисовать цифры по координатам
 drawNum :: [Float] -> [Float] -> [Int] -> Picture
 drawNum x y l = Pictures (zipWith3 (Translate) x y (map (scale compr compr . Text . show) l))
               where compr = 0.12
@@ -109,7 +111,7 @@ drawMode f | mode f == Fill = Pictures [(Color (greyN 0.5) (Polygon [(a, b), (a,
            | mode f == Point = Pictures [(Color (greyN 0.5) (Polygon [(a, b), (a,  b+c), (a+c, b+c), (a+c, b)])), (drawMark a b (convertMode (mode f)))]
            where
            a = fromIntegral (indent)
-           b = fromIntegral ((screenHeight f) - (indent)) - c
+           b = fromIntegral ((screenHeight f) - (indent + timerIndent)) - c
            c = fromIntegral (cellSize)
 
 -- закрасить клетку
@@ -119,14 +121,6 @@ drawMark x y m | m == Filled = Translate (x) (y) (Polygon [(1,  2), (1,  a+1), (
                | m == Empty = Translate (x) (y) (Color (white) (Polygon [(1, 2), (1,  a+1), (a, a+1), (a, 2)]))
                where a = fromIntegral (cellSize - 2)
 
-drawWin :: Field -> Picture
-drawWin f | jumble f == 0 = Color (red) (Translate x y (scale compr compr (Text "WINNING!")))
-          | otherwise = Blank
-            where
-              x = fromIntegral (screenWidth f) / 2 - 80
-              y = fromIntegral (screenHeight f) / 2 - 20
-              compr = 0.4
-
 -- закрашивание игрового поля             
 drawCell :: Field -> Picture
 drawCell f = pictures drawCells
@@ -135,3 +129,27 @@ drawCell f = pictures drawCells
            draw1 (j, linecell) = map draw2 (zip [0..] linecell)
              where
              draw2 (i, cell) = drawMark (fromIntegral (indent + (getSize(lineSize f horline)) + (getSize i))) (fromIntegral (indent + (getSize ((height f) - j - 1)))) (current cell)
+
+-- отрисовка таймера
+drawTimer :: Field -> Picture
+drawTimer f = Pictures [new, time]
+              where
+              x = fromIntegral (screenWidth f)
+              y = fromIntegral ((screenHeight f) - indent - timerIndent)
+              a = fromIntegral (timerIndent)
+              i = fromIntegral (indent)
+              t =  show (fst (getTime f)) ++ ":" ++ show (snd (getTime f))
+              compr = 0.15
+              new = Translate (0) (y) (Color (white) (Polygon [(0,  0), (0,  a), (x, a), (x, 0)]))
+              time = Translate (i) (y+i) (scale compr compr (Text t))
+
+-- надпись о победе
+drawWin :: Field -> Picture
+drawWin f | jumble f == 0 = Pictures [table, title] 
+          | otherwise = Blank
+            where
+              table = Color (greyN 0.9) (Translate (x-10) (y-5) (Polygon [(0,  0), (0,  50), (230, 50), (230, 0)]))
+              title = Color (red) (Translate x y (scale compr compr (Text "WINNING!")))
+              x = fromIntegral (screenWidth f) / 2 - 80
+              y = fromIntegral (screenHeight f) / 2 - 20
+              compr = 0.4
