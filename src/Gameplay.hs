@@ -60,13 +60,19 @@ makeApp m = App {menu = m, field = makeField, err = False}
 drawApp :: App -> Picture
 drawApp a | err a = drawErr
           | kostyl (menu a) == 1 = delMenu (menu a)
+          | regime (field a) == 2 = Pictures [delField (field a), drawMenu (menu a)]
           | otherwise = case (selected (menu a)) of
                         Nothing -> drawMenu (menu a)
                         Just fp -> drawGame (field a)
 
 -- обработка
+changeReg :: Event -> App -> App
+changeReg (EventKey (MouseButton LeftButton) Down _ _) a = makeFKostyl a
+changeReg _ a = a 
+
 handleEvent :: Event -> App -> App
-handleEvent eve a | kostyl (menu a) == 1 = makeKostyl a
+handleEvent eve a | kostyl (menu a) == 1 = makeMKostyl a
+                  | regime (field a) == 1 = changeReg eve a
                   | otherwise = case (selected (menu a)) of
                                 Nothing -> a {menu = handleMenu eve (menu a)}
                                 Just fp -> a {field = handleGame eve (field a)}
@@ -78,14 +84,17 @@ appUpdate f a = case (selected (menu a)) of
                 Just fp -> a{field = fieldUpdate f (field a)}
 
 -- смена режимов работы приложения
-makeKostyl :: App -> App
-makeKostyl a = a{field = readField filecontent, menu = m, err = e}
+makeMKostyl :: App -> App
+makeMKostyl a = a{field = readField filecontent, menu = m, err = e}
              where
              m = reduK (menu a)
              filecontent = lines (unsafePerformIO (readFile (filePath (menu a))))
              e = case (checkInput filecontent) of
                    False -> True
                    True -> False
+makeFKostyl :: App -> App
+makeFKostyl a = a{field = f, menu = readMenu, err = False}
+              where f = makeField {regime = 2}
 
 -- надпись об ошибке
 drawErr :: Picture

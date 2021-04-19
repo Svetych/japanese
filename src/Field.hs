@@ -13,6 +13,7 @@ makeField = Field
     , verline = [[]]
     , mode = Fill
     , timer = 0
+    , regime = 0
     }
 
  -- считывание игровой сетки из txt файла
@@ -26,6 +27,7 @@ readField x = Field
     , verline = makeLine (transpose x)
     , mode = Fill
     , timer = 0
+    , regime = 0
     }
 
  -- сделать из строки массив цифр
@@ -70,8 +72,12 @@ transpose x = (map head x) : transpose (map tail x)
 
  -- воздействие на поле (изменяем состяние gamegrid[i][j] и поле jumble)
 changeField :: Field -> Int -> Int -> Field
-changeField f i j = f{gamegrid = (take i (gamegrid f)) ++ (fst pair), jumble = (jumble f) + (snd pair)}
-                 where pair = (changeGrid (gamegrid f) (mode f) (jumble f) i j)
+changeField f i j = f{gamegrid = (take i (gamegrid f)) ++ (fst pair), jumble = (jumble f) + (snd pair), regime = r}
+                 where
+                 pair = (changeGrid (gamegrid f) (mode f) (jumble f) i j)
+                 r = case (jumble f) + (snd pair) == 0 of
+                     True -> 1
+                     False -> 0
 
 changeGrid :: Grid -> Mode -> Int -> Int -> Int -> (Grid, Int)
 changeGrid [[]] _ _ _ _= ([[]], 0)

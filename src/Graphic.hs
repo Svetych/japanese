@@ -153,3 +153,10 @@ drawWin f | jumble f == 0 = Pictures [table, title]
               x = fromIntegral (screenWidth f) / 2 - 80
               y = fromIntegral (screenHeight f) / 2 - 20
               compr = 0.4
+
+-- удалить поле
+delField :: Field -> Picture
+delField f = Color (white) (Polygon [(0,  0), (0,  h), (w, h), (w, 0)])
+          where
+          h = fromIntegral (screenHeight f)
+          w = fromIntegral (screenWidth f)
