@@ -28,6 +28,7 @@ handleGame (EventKey (MouseButton LeftButton) Down _ mouse) f | x >= 0 && x < wi
                                                                 where
                                                                    x = mouseToCoordX mouse f
                                                                    y = mouseToCoordY mouse f
+handleGame (EventKey q Down _ _) f = f{regime = 3}
 handleGame _ f = f  
 
 -- Получить координаты клетки под мышкой
@@ -60,7 +61,7 @@ makeApp m = App {menu = m, field = makeField, err = False}
 drawApp :: App -> Picture
 drawApp a | err a = drawErr
           | kostyl (menu a) == 1 = delMenu (menu a)
-          | regime (field a) == 2 = Pictures [delField (field a), drawMenu (menu a)]
+          | regime (field a) == 2 || regime (field a) == 3 = Pictures [delField (field a), drawMenu (menu a)]
           | otherwise = case (selected (menu a)) of
                         Nothing -> drawMenu (menu a)
                         Just fp -> drawGame (field a)
@@ -73,15 +74,17 @@ changeReg _ a = a
 handleEvent :: Event -> App -> App
 handleEvent eve a | kostyl (menu a) == 1 = makeMKostyl a
                   | regime (field a) == 1 = changeReg eve a
+                  | regime (field a) == 3 = makeFKostyl a
                   | otherwise = case (selected (menu a)) of
                                 Nothing -> a {menu = handleMenu eve (menu a)}
                                 Just fp -> a {field = handleGame eve (field a)}
 
 -- обновление
 appUpdate :: Float -> App -> App
-appUpdate f a = case (selected (menu a)) of
-                Nothing -> a{menu = menuUpdate f(menu a)}
-                Just fp -> a{field = fieldUpdate f (field a)}
+appUpdate f a | regime (field a) == 1 = a
+              | otherwise = case (selected (menu a)) of
+                            Nothing -> a{menu = menuUpdate f(menu a)}
+                            Just fp -> a{field = fieldUpdate f (field a)}
 
 -- смена режимов работы приложения
 makeMKostyl :: App -> App
