@@ -28,7 +28,8 @@ handleGame (EventKey (MouseButton LeftButton) Down _ mouse) f | x >= 0 && x < wi
                                                                 where
                                                                    x = mouseToCoordX mouse f
                                                                    y = mouseToCoordY mouse f
-handleGame (EventKey q Down _ _) f = f{regime = 3}
+handleGame (EventKey (Char 'q') Down _ _) f = f{regime = 3}
+handleGame (EventKey (Char 'Q') Down _ _) f = f{regime = 3}
 handleGame _ f = f  
 
 -- Получить координаты клетки под мышкой
@@ -60,7 +61,7 @@ makeApp m = App {menu = m, field = makeField, err = False}
 -- отрисовка
 drawApp :: App -> Picture
 drawApp a | err a = drawErr
-          | kostyl (menu a) == 1 = delMenu (menu a)
+          | switch (menu a) == 1 = delMenu (menu a)
           | regime (field a) == 2 || regime (field a) == 3 = Pictures [delField (field a), drawMenu (menu a)]
           | otherwise = case (selected (menu a)) of
                         Nothing -> drawMenu (menu a)
@@ -68,13 +69,13 @@ drawApp a | err a = drawErr
 
 -- обработка
 changeReg :: Event -> App -> App
-changeReg (EventKey (MouseButton LeftButton) Down _ _) a = makeFKostyl a
+changeReg (EventKey (MouseButton LeftButton) Down _ _) a = makeFregime a
 changeReg _ a = a 
 
 handleEvent :: Event -> App -> App
-handleEvent eve a | kostyl (menu a) == 1 = makeMKostyl a
+handleEvent eve a | switch (menu a) == 1 = makeMswitch a
                   | regime (field a) == 1 = changeReg eve a
-                  | regime (field a) == 3 = makeFKostyl a
+                  | regime (field a) == 3 = makeFregime a
                   | otherwise = case (selected (menu a)) of
                                 Nothing -> a {menu = handleMenu eve (menu a)}
                                 Just fp -> a {field = handleGame eve (field a)}
@@ -87,16 +88,16 @@ appUpdate f a | regime (field a) == 1 = a
                             Just fp -> a{field = fieldUpdate f (field a)}
 
 -- смена режимов работы приложения
-makeMKostyl :: App -> App
-makeMKostyl a = a{field = readField filecontent, menu = m, err = e}
+makeMswitch :: App -> App
+makeMswitch a = a{field = readField filecontent, menu = m, err = e}
              where
-             m = reduK (menu a)
+             m = reduce (menu a)
              filecontent = lines (unsafePerformIO (readFile (filePath (menu a))))
              e = case (checkInput filecontent) of
                    False -> True
                    True -> False
-makeFKostyl :: App -> App
-makeFKostyl a = a{field = f, menu = readMenu, err = False}
+makeFregime :: App -> App
+makeFregime a = a{field = f, menu = readMenu, err = False}
               where f = makeField {regime = 2}
 
 -- надпись об ошибке

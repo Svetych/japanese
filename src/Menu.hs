@@ -2,6 +2,8 @@
 module Menu where
 
 import System.FilePath.Posix
+import System.Directory
+import System.IO.Unsafe
 import Graphics.Gloss.Interface.Pure.Game
 import Graphic
 
@@ -11,12 +13,12 @@ data Menu = Menu
     , selected :: Maybe String -- выбранная головоломка
     , widthM :: Int -- ширина
     , heightM :: Int -- высота
-    , kostyl :: Int -- остановка работы
+    , switch :: Int -- остановка работы
     }
 
 -- загружаемые файлы (списком)
 files :: [FilePath]
-files = ["./base/time.txt", "./base/house.txt", "./base/cup.txt", "./base/lambda.txt", "./base/rose.txt"]
+files = map ("./base" </>) (unsafePerformIO (listDirectory "./base"))
 
 -- получаем менюшку
 readMenu :: Menu
@@ -25,7 +27,7 @@ readMenu = Menu
     , selected = Nothing
     , widthM = 2 * indent + (1 + (length files)) * cellSize
     , heightM = 2 * indent + (1 + (length files)) * cellSize
-    , kostyl = 0
+    , switch = 0
     }
 
 -- для выбора файла
@@ -38,7 +40,7 @@ chooseMenu m i = (games m) !! i
 
 -- поменять режимы
 changeMenu :: Menu -> Int -> Menu
-changeMenu m i = menu{kostyl = 1}
+changeMenu m i = menu{switch = 1}
                  where menu = selectMenu m (chooseMenu m i)
 
 -- отрисовать меню
@@ -83,5 +85,5 @@ delMenu m = Color (white) (Polygon [(0,  0), (0,  h), (h, h), (h, 0)])
           where h = fromIntegral (heightM m)
 
 -- убрать костыль
-reduK :: Menu -> Menu
-reduK m = m {kostyl = 0}
+reduce :: Menu -> Menu
+reduce m = m {switch = 0}
