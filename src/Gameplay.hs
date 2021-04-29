@@ -28,8 +28,7 @@ handleGame (EventKey (MouseButton LeftButton) Down _ mouse) f | x >= 0 && x < wi
                                                                 where
                                                                    x = mouseToCoordX mouse f
                                                                    y = mouseToCoordY mouse f
-handleGame (EventKey (Char 'q') Down _ _) f = f{regime = 3}
-handleGame (EventKey (Char 'Q') Down _ _) f = f{regime = 3}
+handleGame (EventKey (SpecialKey KeyHome) Down _ _) f = f{regime = 3}
 handleGame _ f = f  
 
 -- Получить координаты клетки под мышкой
