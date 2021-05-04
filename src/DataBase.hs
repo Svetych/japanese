@@ -39,7 +39,7 @@ addRecord new_time name_field (r:rs) | name_field == (fst r) && new_time < (snd 
                                      | otherwise = r : addRecord new_time name_field rs
 addRecord new_time name_field [] = (name_field, new_time) : []
            
---сохранение нового рекорда в таблицу рекордов (сразу сортируются по времени)
+--сохранение нового рекорда в таблицу рекордов
 saveRecord :: Int -> String -> App -> Record -> IO App
 saveRecord x name a record = do
                     writeFile "./save/record.txt" (show (addRecord x name record)) 

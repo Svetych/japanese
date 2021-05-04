@@ -84,7 +84,7 @@ menuRecordTitle :: Menu -> Picture
 menuRecordTitle m = Translate (i) (y) (Color (red) (scale compr compr (Text "Records")))
           where
           y = 500
-          i = 500
+          i = 500 + fromIntegral (indent * 2)
           compr = 0.2
           
 takeName :: (String, Int) -> String
@@ -153,5 +153,5 @@ delMenu m = Color (white) (Polygon [(0,  0), (0,  h), (h, h), (h, 0)])
           where h = fromIntegral (heightM m)
 
 -- убрать костыль
-reduK :: Menu -> Menu
-reduK m = m {kostyl = 0}
+reduce :: Menu -> Menu
+reduce m = m {kostyl = 0}

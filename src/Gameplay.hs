@@ -1,9 +1,7 @@
 -- Игровой процесс --  
 module Gameplay where
 import Graphics.Gloss.Interface.IO.Game 
-import System.IO.Unsafe
-import Control.DeepSeq
-import Control.Exception
+import System.IO.Unsafe 
 import System.FilePath.Posix
 import System.Directory
 import System.IO
@@ -115,7 +113,7 @@ makeMswitch a = do
         fch <- readFile (choosefiles (savefile (menu a)) (selectedNum (menu a)))
         fb <- readFile (filePath (menu a))
         board <- searchBoard fch fb
-        return(a{field = board{numberfield = selectedNum (menu a)}, menu = (reduK (menu a)), err = False})
+        return(a{field = board{numberfield = selectedNum (menu a)}, menu = (reduce (menu a)), err = False})
                    
 makeFregime :: IO App -> IO App
 makeFregime aa = do
