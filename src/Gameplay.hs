@@ -2,6 +2,7 @@
 module Gameplay where
 import Graphics.Gloss.Interface.IO.Game 
 import System.IO.Unsafe 
+import System.Exit
 import System.FilePath.Posix
 import System.Directory
 import System.IO
@@ -34,6 +35,7 @@ handleGame (EventKey (MouseButton LeftButton) Down _ mouse) f strs | x >= 0 && x
                                                                        y = mouseToCoordY mouse f
 handleGame (EventKey (Char 'q') Down _ _) f strs = return(f{regime = 3})
 handleGame (EventKey (Char 's') Down _ _) f strs = saveBoard f strs
+handleGame (EventKey (SpecialKey KeyEsc) Down _ _) f strs = exitSuccess
 handleGame _ f _ = return(f)  
 
 
